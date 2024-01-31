@@ -14,12 +14,9 @@ def main():
     """
 
     students = get_students()
-    scores_list = get_scores(students)
-
-    iteration = 1
-    for current_score in scores_list:
-        print("Student " + str(iteration) + " score is " + str(current_score[0]) + " and grade is " + current_score[1])
-        iteration += 1
+    scores = get_scores(students)
+    grade_scale = get_grade_scale(scores)
+    output(scores, grade_scale)
 
 
 def get_students():
@@ -36,7 +33,7 @@ def get_students():
             raise IndexError
 
     except IndexError:
-        print("\"" + str(students) + "\" must be a positive integer value.")
+        print("\"" + str(students) + "\" must be a positive whole-number integer value")
         students = get_students()
 
     except ValueError:
@@ -50,13 +47,12 @@ def get_scores(students):
     """
     Requests input of score and appends letter grade scale
     :param students: int quantity of students
-    :return: 3-dimensional List[] containing score & letter grade; e.g. [[100, A], [0, F]]
+    :return: List[] containing int scores; e.g. [100, 0]
     """
 
     try:
         scores = scores_input(students)
         scores = convert_to_list(students, scores)
-        scores = append_letter_grades(scores)
 
     except ValueError:
         print("Scores must only include whole-number integer values between 0-100.")
@@ -92,9 +88,18 @@ def convert_to_list(students, scores_str):
     Processes conversion of values and creates grade scale
     :param scores_str: Space-separated integers within a String; e.g. "100 70 50"
     :param students: int quantity of students
-    :return: 3-dimensional List[] containing only a score; e.g. [[100], [0]]
+    :return:  List[] containing int scores; e.g. [100, 0]
     """
 
+    scores_list = scores_str.split()
+    scores_list = list(map(int, scores_list))
+    scores_list = scores_list[slice(students)]
+
+    for current_score in scores_list:
+        if current_score not in range(0, 101):
+            raise ValueError
+
+    """
     iterations = 0
     scores_substr = scores_str
     scores_list = []
@@ -127,38 +132,51 @@ def convert_to_list(students, scores_str):
             scores_substr = scores_substr[end_index:].strip()  # shift substring & clear duplicate spaces
 
             iterations += 1
+    """
 
     return scores_list
 
 
-def append_letter_grades(scores):
+def get_grade_scale(scores):
     """
     Create weighted grade scale & append to provided scores
-    :param scores: 3-dimensional List[] containing only a score; e.g. [[100], [0]]
-    :return: 3-dimensional List[] containing score & letter grade; e.g. [[100, A], [0, F]]
+    :param scores: List[] containing int scores; e.g. [100, 0]
+    :return: Dict{} containing A-F minimum scores; e.g. {A:90, B:80, C:70, D:60, F:59}
     """
 
-    best_score = max(scores)[0]
-    d_cutoff = best_score - 40
-    c_cutoff = best_score - 30
-    b_cutoff = best_score - 20
-    a_cutoff = best_score - 10
+    best_score = max(scores)
 
-    iterations = 0
-    for current_student in scores:
-        if current_student[0] < d_cutoff:
-            scores[iterations].append('F')
-        elif current_student[0] < c_cutoff:
-            scores[iterations].append('D')
-        elif current_student[0] < b_cutoff:
-            scores[iterations].append('C')
-        elif current_student[0] < a_cutoff:
-            scores[iterations].append('B')
-        else:
-            scores[iterations].append('A')
-        iterations += 1
+    grading_scale = {'A': best_score - 10,
+                     'B': best_score - 20,
+                     'C': best_score - 30,
+                     'D': best_score - 40,
+                     'F': best_score - 41}
 
-    return scores
+    return grading_scale
+
+
+def output(scores, grade_scale):
+    """
+
+    :return:
+    """
+
+    iteration = 1
+    for current_score in scores:
+        match current_score:
+            case value if value in range(grade_scale.get('A'), (max(scores) + 1)):
+                current_grade = 'A'
+            case value if value in range(grade_scale.get('B'), grade_scale.get('A')):
+                current_grade = 'B'
+            case value if value in range(grade_scale.get('C'), grade_scale.get('B')):
+                current_grade = 'C'
+            case value if value in range(grade_scale.get('D'), grade_scale.get('C')):
+                current_grade = 'D'
+            case _:
+                current_grade = 'F'
+
+        print("Student " + str(iteration) + " score is " + str(current_score) + " and grade is " + current_grade)
+        iteration += 1
 
 
 main()
