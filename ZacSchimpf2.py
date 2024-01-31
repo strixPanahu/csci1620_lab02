@@ -99,41 +99,6 @@ def convert_to_list(students, scores_str):
         if current_score not in range(0, 101):
             raise ValueError
 
-    """
-    iterations = 0
-    scores_substr = scores_str
-    scores_list = []
-
-    end_index = scores_substr.find(" ")
-    if end_index == -1:
-        current_score = int(scores_substr)
-        scores_list.append([current_score])
-
-        if current_score > 100 or current_score < 0:
-            raise ValueError
-    else:
-        while iterations < students:
-            end_index = scores_substr.find(" ")
-            if end_index == -1:  # take whole value, if no spaces left
-                current_score = int(scores_substr)
-                scores_list.append([current_score])
-
-                final_value = students - 1  # check for too few values
-                if iterations != final_value:
-                    raise IndexError
-            else:
-                current_score = int(scores_substr[:end_index])
-                scores_list.append([current_score])
-
-            if current_score > 100 or current_score < 0:
-                raise ValueError
-
-            end_index += 1  # shift value to skip current space char
-            scores_substr = scores_substr[end_index:].strip()  # shift substring & clear duplicate spaces
-
-            iterations += 1
-    """
-
     return scores_list
 
 
@@ -157,8 +122,10 @@ def get_grade_scale(scores):
 
 def output(scores, grade_scale):
     """
-
-    :return:
+    Console-level output of students' scores & letter grades
+    :param scores: List[] containing int scores; e.g. [100, 0]
+    :param grade_scale: Dict{} containing A-F minimum scores; e.g. {A:90, B:80, C:70, D:60, F:59}
+    :return: None
     """
 
     iteration = 1
